@@ -18,7 +18,6 @@ const ManageExpense = ({ route, navigation }) => {
   const authCtx= useContext(AuthContext)
   const token = authCtx.token;
   const expenseCtx = useContext(ExpensesContext);
-  console.log(route.params);
 
   const editedExpenseId = route.params?.expenseId; //the ? is for checking if params is defined in order to check for expenseId
   const isEditing = !!editedExpenseId; // makes the value into boolean true/false
@@ -26,8 +25,6 @@ const ManageExpense = ({ route, navigation }) => {
   const selectedExpense = expenseCtx.expenses.find(
     (expense) => expense.id === editedExpenseId
   );
-
-  console.log(selectedExpense);
 
   useLayoutEffect(() => {
     navigation.setOptions({
