@@ -10,6 +10,13 @@ import { Ionicons } from "@expo/vector-icons";
 import IconButton from "./components/UI/IconButton";
 import Settings from "./screens/Settings";
 import ExpensesContextProvider from "./store/expenses-context";
+import LoginScreen from "./screens/LoginScreen";
+import SignupScreen from "./screens/SignupScreen";
+import { useContext, useState, useEffect } from "react";
+import AuthContextProvider, { AuthContext } from "./store/auth-context";
+import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -56,7 +63,7 @@ const ExpensesOverview = () => {
           ),
         }}
       />
-      <BottomTabs.Screen
+      {/* <BottomTabs.Screen
         name="Settings"
         component={Settings}
         options={{
@@ -66,36 +73,101 @@ const ExpensesOverview = () => {
             <Ionicons name="settings" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
     </BottomTabs.Navigator>
   );
+};
+
+const AuthStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerTintColor: "white",
+        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+      }}
+    >
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+    </Stack.Navigator>
+  );
+};
+
+function AuthenticatedStack() {
+  const authCtx = useContext(AuthContext);
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerTintColor: "white",
+        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+        headerRight: ({ tintColor }) => (
+          <IconButton
+            icon="exit"
+            color={tintColor}
+            size={24}
+            onPress={authCtx.logout}
+          />
+        ),
+      }}
+    >
+      <Stack.Screen
+        name="ExpensesOverview"
+        component={ExpensesOverview}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ManageExpense"
+        component={ManageExpense}
+        options={{ presentation: "modal" }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function Navigation() {
+  const authCtx = useContext(AuthContext);
+
+  return (
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
+  );
+}
+
+const Root = () => {
+  const [isTryingLogin, setIsTryingLogin] = useState(true);
+  const authCtx = useContext(AuthContext);
+
+  //code that runs at the start of the application
+  useEffect(() => {
+    const fetchToken = async () => {
+      const storedToken = await AsyncStorage.getItem("token");
+      if (storedToken) {
+        authCtx.authenticate(storedToken);
+      }
+      setIsTryingLogin(false);
+    };
+    fetchToken();
+  }, []);
+
+  if (isTryingLogin) {
+    return <AppLoading />;
+  }
+
+  return <Navigation />;
 };
 
 export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <ExpensesContextProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-              headerTintColor: "white",
-            }}
-          >
-            <Stack.Screen
-              name="ExpensesOverview"
-              component={ExpensesOverview}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="ManageExpense"
-              component={ManageExpense}
-              options={{ presentation: "modal" }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ExpensesContextProvider>
+      <AuthContextProvider>
+        <ExpensesContextProvider>
+          <Root />
+        </ExpensesContextProvider>
+      </AuthContextProvider>
     </>
   );
 }
