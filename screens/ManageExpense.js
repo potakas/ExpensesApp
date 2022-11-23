@@ -9,12 +9,16 @@ import { deleteExpense, storeExpense, updateExpense } from "../util/http";
 import { useState } from "react";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import ErrorOverlay from "../components/UI/ErrorOverlay";
+import { AuthContext } from "../store/auth-context";
 
 const ManageExpense = ({ route, navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState();
 
+  const authCtx= useContext(AuthContext)
+  const token = authCtx.token;
   const expenseCtx = useContext(ExpensesContext);
+  console.log(route.params);
 
   const editedExpenseId = route.params?.expenseId; //the ? is for checking if params is defined in order to check for expenseId
   const isEditing = !!editedExpenseId; // makes the value into boolean true/false
@@ -22,6 +26,8 @@ const ManageExpense = ({ route, navigation }) => {
   const selectedExpense = expenseCtx.expenses.find(
     (expense) => expense.id === editedExpenseId
   );
+
+  console.log(selectedExpense);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,7 +38,7 @@ const ManageExpense = ({ route, navigation }) => {
   const deleteExpenseHandler = async () => {
     setIsSubmitting(true);
     try {
-      await deleteExpense(editedExpenseId);
+      await deleteExpense(editedExpenseId, token);
       expenseCtx.deleteExpense(editedExpenseId);
       navigation.goBack(); // this built-in function closed the modal and returns to prev page
     } catch (error) {
@@ -48,11 +54,12 @@ const ManageExpense = ({ route, navigation }) => {
     try {
       if (isEditing) {
         expenseCtx.updateExpense(editedExpenseId, expenseData);
-        await updateExpense(editedExpenseId, expenseData);
+        await updateExpense(editedExpenseId, expenseData,token);
       } else {
-        const id = await storeExpense(expenseData);
+        const id = await storeExpense(expenseData, token);
         expenseCtx.addExpense({ ...expenseData, id: id });
       }
+      setIsSubmitting(false);
       navigation.goBack(); // this built-in function closed the modal and returns to prev page
     } catch (error) {
       setError("Could not save data - please try again later.");
