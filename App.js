@@ -22,21 +22,31 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 const ExpensesOverview = () => {
+  const authCtx = useContext(AuthContext);
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerTitleAlign: "center",
+        headerStyle: { backgroundColor: GlobalStyles.colors.primary500, },
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
-        headerRight: ({ tintColor }) => (
+        // headerRight: ({ tintColor }) => (
+        //   <IconButton
+        //     icon="add"
+        //     size={24}
+        //     color={tintColor}
+        //     onPress={() => {
+        //       navigation.navigate("ManageExpense");
+        //     }}
+        //   />
+        // ),
+        headerRight:({ tintColor }) => (
           <IconButton
-            icon="add"
+            icon="exit"
             size={24}
             color={tintColor}
-            onPress={() => {
-              navigation.navigate("ManageExpense");
-            }}
+            onPress={authCtx.logout}
           />
         ),
       })}
@@ -63,6 +73,17 @@ const ExpensesOverview = () => {
           ),
         }}
       />
+      <BottomTabs.Screen
+        name="ManageExpense"
+        component={ManageExpense}
+        options={{
+          title: "Manage Expense",
+          tabBarLabel: "Add",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add" size={size} color={color} />
+          ),
+        }}
+      />
       {/* <BottomTabs.Screen
         name="Settings"
         component={Settings}
@@ -82,6 +103,7 @@ const AuthStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleAlign: "center",
         headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: "white",
         contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
@@ -101,14 +123,6 @@ function AuthenticatedStack() {
         headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: "white",
         contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
-        headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="exit"
-            color={tintColor}
-            size={24}
-            onPress={authCtx.logout}
-          />
-        ),
       }}
     >
       <Stack.Screen
