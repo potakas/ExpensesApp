@@ -1,11 +1,15 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const BACKEND_URL =
   "https://react-native-http-11101-default-rtdb.firebaseio.com";
 
-export const storeExpense = async (expenseData,token) => {
+export const storeExpense = async (expenseData, token) => {
+  //add UID to path to create separate tables for each user
+  const UID = await AsyncStorage.getItem("UID");
+  console.log(UID);
   const response = await axios.post(
-    BACKEND_URL + "/expenses.json?auth="+token,
+    BACKEND_URL + "/" + UID + "/expenses.json?auth=" + token,
     expenseData
   );
   const id = response.data.name;
@@ -14,9 +18,14 @@ export const storeExpense = async (expenseData,token) => {
 };
 
 export const fetchExpenses = async (token) => {
+  //add UID to path to create separate tables for each user
+  const UID = await AsyncStorage.getItem("UID");
+  console.log(UID);
 
-
-  const response = await axios.get(BACKEND_URL + "/expenses.json?auth="+token);
+  const response = await axios.get(
+    BACKEND_URL + "/" + UID + "/expenses.json?auth=" + token
+  );
+  console.log(response);
 
   const expenses = [];
 
@@ -33,10 +42,21 @@ export const fetchExpenses = async (token) => {
   return expenses;
 };
 
-export const updateExpense = (id, expenseData, token) => {
-  return axios.put(BACKEND_URL + `/expenses/${id}.json?auth=`+token , expenseData);
+export const updateExpense = async (id, expenseData, token) => {
+  //add UID to path to create separate tables for each user
+  const UID = await AsyncStorage.getItem("UID");
+  console.log(UID);
+  return await axios.put(
+    BACKEND_URL + "/" + UID + `/expenses/${id}.json?auth=` + token,
+    expenseData
+  );
 };
 
-export const deleteExpense = (id, token) => {
-  return axios.delete(BACKEND_URL + `/expenses/${id}.json?auth=`+token);
+export const deleteExpense = async (id, token) => {
+  //add UID to path to create separate tables for each user
+  const UID = await AsyncStorage.getItem("UID");
+  console.log(UID);
+  return axios.delete(
+    BACKEND_URL + "/" + UID + `/expenses/${id}.json?auth=` + token
+  );
 };

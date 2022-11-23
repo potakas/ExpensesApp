@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const API_KEY = "AIzaSyBfdVk4mmcmG5mQzINRAIzQo0oqekNkUlM";
@@ -12,6 +13,8 @@ const authenticate = async (mode, email, password) => {
   });
 
   const token = response.data.idToken;
+  // use UID to create separate tables for each user
+  AsyncStorage.setItem('UID', response.data.localId);
   return token;
 };
 
