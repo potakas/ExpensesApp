@@ -7,7 +7,6 @@ const BACKEND_URL =
 export const storeExpense = async (expenseData, token) => {
   //add UID to path to create separate tables for each user
   const UID = await AsyncStorage.getItem("UID");
-  console.log(UID);
   const response = await axios.post(
     BACKEND_URL + "/" + UID + "/expenses.json?auth=" + token,
     expenseData
@@ -20,12 +19,10 @@ export const storeExpense = async (expenseData, token) => {
 export const fetchExpenses = async (token) => {
   //add UID to path to create separate tables for each user
   const UID = await AsyncStorage.getItem("UID");
-  console.log(UID);
 
   const response = await axios.get(
     BACKEND_URL + "/" + UID + "/expenses.json?auth=" + token
   );
-  console.log(response);
 
   const expenses = [];
 
@@ -45,7 +42,6 @@ export const fetchExpenses = async (token) => {
 export const updateExpense = async (id, expenseData, token) => {
   //add UID to path to create separate tables for each user
   const UID = await AsyncStorage.getItem("UID");
-  console.log(UID);
   return await axios.put(
     BACKEND_URL + "/" + UID + `/expenses/${id}.json?auth=` + token,
     expenseData
@@ -55,7 +51,6 @@ export const updateExpense = async (id, expenseData, token) => {
 export const deleteExpense = async (id, token) => {
   //add UID to path to create separate tables for each user
   const UID = await AsyncStorage.getItem("UID");
-  console.log(UID);
   return axios.delete(
     BACKEND_URL + "/" + UID + `/expenses/${id}.json?auth=` + token
   );
