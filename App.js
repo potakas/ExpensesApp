@@ -12,11 +12,11 @@ import Settings from "./screens/Settings";
 import ExpensesContextProvider from "./store/expenses-context";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { AppState } from "react-native";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -27,7 +27,7 @@ const ExpensesOverview = () => {
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500, },
+        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
@@ -41,7 +41,7 @@ const ExpensesOverview = () => {
             }}
           />
         ),
-        headerLeft:({ tintColor }) => (
+        headerLeft: ({ tintColor }) => (
           <IconButton
             icon="exit"
             size={24}
@@ -141,6 +141,24 @@ function AuthenticatedStack() {
 
 function Navigation() {
   const authCtx = useContext(AuthContext);
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    //for closing when on background 
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current.match(/active/) &&
+        (nextAppState === "inactive" || nextAppState === "background")
+      ) {
+        console.log("App has come to the background!");
+        authCtx.logout();
+      }
+      appState.current = nextAppState;
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   return (
     <NavigationContainer>
