@@ -18,7 +18,7 @@ const ExpenseItem = ({ id, description, amount, date }) => {
 
 
   const onLongPress = () => {
-    setLongPressTriggered(true);
+    setLongPressTriggered(true); //boolean for determining longPressed
   };
 
   const deleteExpenseHandler = async() => {
@@ -37,7 +37,7 @@ const ExpenseItem = ({ id, description, amount, date }) => {
 
   return (
     <Pressable
-      // onPress={expensePressHandler}
+      onPress={()=>{setLongPressTriggered(false)}} //reset the onLongPress functionality
       onLongPress={onLongPress}
       style={({ pressed }) => pressed && styles.pressed}
     >
@@ -54,8 +54,8 @@ const ExpenseItem = ({ id, description, amount, date }) => {
           </View>
         </View>
       )}
-      {longPressTriggered && (
-        <View style={styles.deleteContainer}>
+      {longPressTriggered && ( //options for longPressed
+        <View style={styles.optionsContainer}>
           <IconButton
             icon="pencil"
             color='white'
@@ -114,11 +114,7 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.primary500,
     fontWeight: "bold",
   },
-  deleteContainer: {
-    marginTop: 16,
-    paddingTop: 8,
-    borderTopWidth: 2,
-    borderTopColor: GlobalStyles.colors.primary200,
+  optionsContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
