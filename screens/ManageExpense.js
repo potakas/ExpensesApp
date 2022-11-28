@@ -32,17 +32,6 @@ const ManageExpense = ({ route, navigation }) => {
     });
   }, [navigation, isEditing]);
 
-  const deleteExpenseHandler = async () => {
-    setIsSubmitting(true);
-    try {
-      await deleteExpense(editedExpenseId, token);
-      expenseCtx.deleteExpense(editedExpenseId);
-      navigation.goBack(); // this built-in function closed the modal and returns to prev page
-    } catch (error) {
-      setError("Could not delete expense.");
-      setIsSubmitting(false);
-    }
-  };
   const cancelHandler = () => {
     navigation.goBack(); // this built-in function closed the modal and returns to prev page
   };
@@ -84,16 +73,6 @@ const ManageExpense = ({ route, navigation }) => {
         onSubmit={confirmHandler}
         defaultValues={selectedExpense}
       />
-      {isEditing && (
-        <View style={styles.deleteContainer}>
-          <IconButton
-            icon="trash"
-            color={GlobalStyles.colors.error500}
-            size={36}
-            onPress={deleteExpenseHandler}
-          />
-        </View>
-      )}
     </View>
   );
 };

@@ -1,31 +1,75 @@
 import { useNavigation } from "@react-navigation/native";
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { useContext, useState } from "react";
+import { Pressable, Text, View, StyleSheet, Alert } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
+import { AuthContext } from "../../store/auth-context";
+import { ExpensesContext } from "../../store/expenses-context";
 import { getFormattedDate } from "../../util/date";
+import { deleteExpense } from "../../util/http";
+import IconButton from "../UI/IconButton";
 
-const ExpenseItem = ({id, description, amount, date }) => {
-    const navigation=useNavigation();
+const ExpenseItem = ({ id, description, amount, date }) => {
+  const navigation = useNavigation();
+  const expenseCtx = useContext(ExpensesContext);
+  const authCtx= useContext(AuthContext)
+  const token = authCtx.token;
+  const [error, setError] = useState();
+  const [longPressTriggered, setLongPressTriggered] = useState(false);
+
+
+  const onLongPress = () => {
+    setLongPressTriggered(true);
+  };
+
+  const deleteExpenseHandler = async() => {
+    try {
+      await deleteExpense(id, token);
+      expenseCtx.deleteExpense(id);
+    } catch (error) {
+      setError("Could not delete expense.");
+    }
+  };
 
   const expensePressHandler = () => {
-    navigation.navigate('ManageExpense',{expenseId:id});
+    navigation.navigate("ManageExpense", { expenseId: id });
+    setLongPressTriggered(false)
   };
 
   return (
     <Pressable
-      onPress={expensePressHandler}
-      style={({pressed}) => pressed && styles.pressed}
+      // onPress={expensePressHandler}
+      onLongPress={onLongPress}
+      style={({ pressed }) => pressed && styles.pressed}
     >
-      <View style={styles.expenseItem}>
-        <View>
-          <Text style={[styles.textBase, styles.description]}>
-            {description}
-          </Text>
-          <Text style={styles.textBase}>{getFormattedDate(date)}</Text>
+      {!longPressTriggered && (
+        <View style={styles.expenseItem}>
+          <View>
+            <Text style={[styles.textBase, styles.description]}>
+              {description}
+            </Text>
+            <Text style={styles.textBase}>{getFormattedDate(date)}</Text>
+          </View>
+          <View style={styles.amountContainer}>
+            <Text style={styles.amount}>{amount.toFixed(2)}€</Text>
+          </View>
         </View>
-        <View style={styles.amountContainer}>
-          <Text style={styles.amount}>{amount.toFixed(2)}€</Text>
+      )}
+      {longPressTriggered && (
+        <View style={styles.deleteContainer}>
+          <IconButton
+            icon="pencil"
+            color='white'
+            size={36}
+            onPress={expensePressHandler}
+          />
+          <IconButton
+            icon="trash"
+            color={GlobalStyles.colors.error500}
+            size={36}
+            onPress={deleteExpenseHandler}
+          />
         </View>
-      </View>
+      )}
     </Pressable>
   );
 };
@@ -69,5 +113,14 @@ const styles = StyleSheet.create({
   amount: {
     color: GlobalStyles.colors.primary500,
     fontWeight: "bold",
+  },
+  deleteContainer: {
+    marginTop: 16,
+    paddingTop: 8,
+    borderTopWidth: 2,
+    borderTopColor: GlobalStyles.colors.primary200,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });
