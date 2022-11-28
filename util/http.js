@@ -36,7 +36,11 @@ export const fetchExpenses = async (token) => {
     expenses.push(expenseObj);
   }
 
-  return expenses;
+  //TO DO 
+  //sort after each update. Now sorts only on login
+  const sortedExpenses= expenses.sort((a,b) =>Number(a.date)-Number(b.date))
+
+  return sortedExpenses;
 };
 
 export const updateExpense = async (id, expenseData, token) => {
