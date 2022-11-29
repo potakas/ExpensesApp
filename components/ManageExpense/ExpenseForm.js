@@ -112,6 +112,7 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
             },
 
             dateText: {
+              color: "white",
               fontSize: 18,
             },
           }}

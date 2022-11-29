@@ -72,7 +72,7 @@ const ExpensesOverview = () => {
             <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
-      />  
+      />
     </BottomTabs.Navigator>
   );
 };
@@ -135,14 +135,16 @@ const Root = () => {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    //for closing when on background 
+    //for closing when on background
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/active/) &&
         (nextAppState === "inactive" || nextAppState === "background")
       ) {
-        console.log("App has come to the background!");
-        authCtx.logout();
+        setTimeout(() => {
+          console.log("App has come to the background!");
+          authCtx.logout();
+        }, 3000);
       }
       appState.current = nextAppState;
     });
