@@ -84,8 +84,7 @@ const RecentExpenses = () => {
           setOpen={setOpen}
           setValue={setValue}
           setItems={setItems}
-          
-          onSelectItem={(item) =>console.log(item)}
+          // onSelectItem={(item) =>console.log(item)}
         />
 
       <ExpensesOutput
