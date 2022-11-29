@@ -72,29 +72,7 @@ const ExpensesOverview = () => {
             <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
-      />
-      {/* <BottomTabs.Screen
-        name="ManageExpense"
-        component={ManageExpense}
-        options={{
-          title: "Manage Expense",
-          tabBarLabel: "Add",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add" size={size} color={color} />
-          ),
-        }}
-      /> */}
-      {/* <BottomTabs.Screen
-        name="Settings"
-        component={Settings}
-        options={{
-          title: "Settings",
-          tabBarLabel: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
-          ),
-        }}
-      /> */}
+      />  
     </BottomTabs.Navigator>
   );
 };
@@ -141,6 +119,19 @@ function AuthenticatedStack() {
 
 function Navigation() {
   const authCtx = useContext(AuthContext);
+
+  return (
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+    </NavigationContainer>
+  );
+}
+
+const Root = () => {
+  const [isTryingLogin, setIsTryingLogin] = useState(true);
+  const authCtx = useContext(AuthContext);
+
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
@@ -159,18 +150,6 @@ function Navigation() {
       subscription.remove();
     };
   }, []);
-
-  return (
-    <NavigationContainer>
-      {!authCtx.isAuthenticated && <AuthStack />}
-      {authCtx.isAuthenticated && <AuthenticatedStack />}
-    </NavigationContainer>
-  );
-}
-
-const Root = () => {
-  const [isTryingLogin, setIsTryingLogin] = useState(true);
-  const authCtx = useContext(AuthContext);
 
   //code that runs at the start of the application
   useEffect(() => {

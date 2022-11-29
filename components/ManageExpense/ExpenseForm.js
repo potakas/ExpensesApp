@@ -3,9 +3,13 @@ import { View, StyleSheet, Text, Alert } from "react-native";
 import Input from "./Input";
 import Button from "../UI/Button";
 import { GlobalStyles } from "../../constants/styles";
+import DatePicker from "react-native-datepicker";
 
 const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
   //store a whole object in the state
+  const [date, setDate] = useState(
+    defaultValues ? defaultValues.date.toISOString().slice(0, 10) : ""
+  );
   const [input, setInput] = useState({
     amount: {
       value: defaultValues ? defaultValues.amount.toString() : "",
@@ -24,7 +28,7 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
   const submitHandler = () => {
     const expenseData = {
       amount: +input.amount.value,
-      date: new Date(input.date.value),
+      date: new Date(date),
       description: input.description.value,
     };
 
@@ -48,7 +52,6 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
       });
       return;
     }
-
     onSubmit(expenseData);
   };
 
@@ -71,7 +74,7 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
       <View style={styles.inputsRow}>
         <Input
           label="Amount"
-          invalid= {!input.amount.isValid}
+          invalid={!input.amount.isValid}
           style={styles.rowInput}
           textInputConfig={{
             keyboardType: "decimal-pad",
@@ -79,9 +82,49 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
             value: input.amount.value,
           }}
         />
-        <Input
+        <DatePicker
+          style={[styles.rowInput, styles.datePicker]}
+          date={date}
+          mode="date"
+          placeholder="Select Date"
+          // format='DD-MM-YYYY'
+          format="YYYY-MM-DD"
+          minDate="01-01-1900"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
+          customStyles={{
+            dateIcon: {
+              position: "relative",
+              right: -5,
+              top: 4,
+              marginLeft: 0,
+            },
+
+            dateInput: {
+              borderColor: "white",
+              alignItems: "center",
+              borderWidth: 0,
+              borderBottomWidth: 1,
+            },
+            placeholderText: {
+              fontSize: 14,
+              color: "white",
+            },
+
+            dateText: {
+              fontSize: 18,
+            },
+          }}
+          onDateChange={(date) => {
+            setDate(date);
+          }}
+          onConfirm={()=>{console.log("Date", date)}}
+          onCancel={()=>{console.log("Canceled")}}
+        />
+        {/* change the date input with datepicker and fix date format to work the same */}
+        {/* <Input
           label="Date"
-          invalid= {!input.date.isValid}
+          invalid={!input.date.isValid}
           style={styles.rowInput}
           textInputConfig={{
             placeholder: "YYYY-MM-DD",
@@ -89,11 +132,11 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
             onChangeText: inputChangedHandler.bind(this, "date"),
             value: input.date.value,
           }}
-        />
+        /> */}
       </View>
       <Input
         label="Description"
-        invalid= {!input.description.isValid}
+        invalid={!input.description.isValid}
         textInputConfig={{
           //used from TextInput documentation
           multiline: true,
@@ -105,7 +148,9 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
         }}
       />
       {formIsValid && (
-        <Text style={styles.errorText}>Invalid input values - please check your entered data!</Text>
+        <Text style={styles.errorText}>
+          Invalid input values - please check your entered data!
+        </Text>
       )}
       <View style={styles.buttons}>
         <Button style={styles.button} mode="flat" onPress={onCancel}>
@@ -150,5 +195,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: GlobalStyles.colors.error500,
     margin: 8,
+  },
+  datePicker: {
+    marginVertical: 24,
   },
 });
