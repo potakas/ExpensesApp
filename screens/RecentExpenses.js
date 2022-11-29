@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import { Text, View } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
 import ErrorOverlay from "../components/UI/ErrorOverlay";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
@@ -11,12 +11,22 @@ import { getDateMinusDays } from "../util/date";
 import { fetchExpenses } from "../util/http";
 
 const RecentExpenses = () => {
+  //useStates for dropdownpicker
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("Last 7 Days");
+  const [items, setItems] = useState([
+    { label: "Last 7 Days", value: "Last 7 Days" },
+    { label: "Last Month", value: "Last Month" },
+    { label: "Last Year", value: "Last Year" },
+  ]);
+ // useStates for fetching Expense Data
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState();
 
-  const authCtx= useContext(AuthContext)
+  const authCtx = useContext(AuthContext);
   const token = authCtx.token;
   const expensesCtx = useContext(ExpensesContext);
+
   useEffect(() => {
     const getExpenses = async () => {
       setIsFetching(true);
@@ -45,17 +55,45 @@ const RecentExpenses = () => {
   }
 
   const recentExpenses = expensesCtx.expenses.filter((expense) => {
+    let pastDays = 0;
+    //changing the pastDays to dynamically calculate the expense period
+    switch (value) {
+      case "Last 7 Days":
+        pastDays = 7;
+        break;
+      case "Last Month":
+        pastDays = 30;
+        break;
+      case "Last Year":
+        pastDays = 365;
+        break;
+      default:
+        break;
+    }
     const today = new Date();
-    const date7DaysAgo = getDateMinusDays(today, 7);
-    return expense.date >= date7DaysAgo && expense.date <= today;
+    const dateDaysAgo = getDateMinusDays(today, pastDays);
+    return expense.date >= dateDaysAgo && expense.date <= today;
   });
 
   return (
-    <ExpensesOutput
-      expenses={recentExpenses}
-      expensesPeriod="Last 7 days"
-      fallbackText="No expenses registered for the last 7 days."
-    />
+    <>
+        <DropDownPicker
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          
+          onSelectItem={(item) =>console.log(item)}
+        />
+
+      <ExpensesOutput
+        expenses={recentExpenses}
+        expensesPeriod={value}
+        fallbackText={"No expenses registered for the " + value}
+      />
+    </>
   );
 };
 
