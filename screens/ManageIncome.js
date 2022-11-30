@@ -1,49 +1,47 @@
 import { useContext, useLayoutEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
-import Button from "../components/UI/Button";
-import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
-import { deleteExpense, storeExpense, updateExpense } from "../util/http";
+import { storeIncome, updateIncome } from "../util/http";
 import { useState } from "react";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import ErrorOverlay from "../components/UI/ErrorOverlay";
 import { AuthContext } from "../store/auth-context";
+import { IncomeContext } from "../store/income-context";
 
-const ManageExpense = ({ route, navigation }) => {
+const ManageIncome = ({ route, navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState();
 
   const authCtx= useContext(AuthContext)
   const token = authCtx.token;
-  const expenseCtx = useContext(ExpensesContext);
+  const incomeCtx = useContext(IncomeContext);
 
-  const editedExpenseId = route.params?.expenseId; //the ? is for checking if params is defined in order to check for expenseId
-  const isEditing = !!editedExpenseId; // makes the value into boolean true/false
+  const editedIncomeId = route.params?.expenseId; //the ? is for checking if params is defined in order to check for expenseId
+  const isEditing = !!editedIncomeId; // makes the value into boolean true/false
 
-  const selectedExpense = expenseCtx.expenses.find(
-    (expense) => expense.id === editedExpenseId
+  const selectedIncome = incomeCtx.income.find(
+    (income) => income.id === editedIncomeId
   );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isEditing ? "Edit Expense" : "Add Expense",
+      title: isEditing ? "Edit Income" : "Add Income",
     });
   }, [navigation, isEditing]);
 
   const cancelHandler = () => {
     navigation.goBack(); // this built-in function closed the modal and returns to prev page
   };
-  const confirmHandler = async (expenseData) => {
+  const confirmHandler = async (incomeData) => {
     setIsSubmitting(true);
     try {
       if (isEditing) {
-        expenseCtx.updateExpense(editedExpenseId, expenseData);
-        await updateExpense(editedExpenseId, expenseData,token);
+        incomeCtx.updateIncome(editedIncomeId, incomeData);
+        await updateIncome(editedIncomeId, incomeData,token);
       } else {
-        const id = await storeExpense(expenseData, token);
-        expenseCtx.addExpense({ ...expenseData, id: id });
+        const id = await storeIncome(incomeData, token);
+        incomeCtx.addIncome({ ...incomeData, id: id });
       }
       setIsSubmitting(false);
       navigation.goBack(); // this built-in function closed the modal and returns to prev page
@@ -68,17 +66,17 @@ const ManageExpense = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <ExpenseForm
-      mode='Expense'
+        mode='Income'
         onCancel={cancelHandler}
         isEditing={isEditing}
         onSubmit={confirmHandler}
-        defaultValues={selectedExpense}
+        defaultValues={selectedIncome}
       />
     </View>
   );
 };
 
-export default ManageExpense;
+export default ManageIncome;
 
 const styles = StyleSheet.create({
   container: {

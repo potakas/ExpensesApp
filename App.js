@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppState } from "react-native";
 import Income from "./screens/Income";
 import IncomeContextProvider from "./store/income-context";
+import ManageIncome from "./screens/ManageIncome";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -33,17 +34,17 @@ const ExpensesOverview = () => {
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        // headerRight: ({ tintColor }) => (
+        //   <IconButton
+        //     icon="add"
+        //     size={24}
+        //     color={tintColor}
+        //     onPress={() => {
+        //       navigation.navigate("ManageExpense");
+        //     }}
+        //   />
+        // ),
         headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="add"
-            size={24}
-            color={tintColor}
-            onPress={() => {
-              navigation.navigate("ManageExpense");
-            }}
-          />
-        ),
-        headerLeft: ({ tintColor }) => (
           <IconButton
             icon="exit"
             size={24}
@@ -125,6 +126,11 @@ function AuthenticatedStack() {
       <Stack.Screen
         name="ManageExpense"
         component={ManageExpense}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="ManageIncome"
+        component={ManageIncome}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>

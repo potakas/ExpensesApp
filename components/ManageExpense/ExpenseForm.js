@@ -5,7 +5,7 @@ import Button from "../UI/Button";
 import { GlobalStyles } from "../../constants/styles";
 import DatePicker from "react-native-datepicker";
 
-const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
+const ExpenseForm = ({mode, onCancel, onSubmit, isEditing, defaultValues }) => {
   //store a whole object in the state
   const [date, setDate] = useState(
     defaultValues ? defaultValues.date.toISOString().slice(0, 10) : ""
@@ -70,7 +70,7 @@ const ExpenseForm = ({ onCancel, onSubmit, isEditing, defaultValues }) => {
 
   return (
     <View style={styles.form}>
-      <Text style={styles.title}>Your Expense</Text>
+      <Text style={styles.title}>Your {mode}</Text>
       <View style={styles.inputsRow}>
         <Input
           label="Amount"

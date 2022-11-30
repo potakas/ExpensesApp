@@ -91,6 +91,7 @@ const RecentExpenses = ({ navigation }) => {
       />
 
       <ExpensesOutput
+        mode="expense"
         expenses={recentExpenses}
         expensesPeriod={value}
         fallbackText={"No expenses registered for the " + value}

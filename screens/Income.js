@@ -13,7 +13,7 @@ import { IncomeContext } from "../store/income-context";
 import { getDateMinusDays } from "../util/date";
 import { fetchIncome } from "../util/http";
 
-const Income = () => {
+const Income = ({ navigation }) => {
   //useStates for dropdownpicker
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("Last 7 Days");
@@ -91,6 +91,7 @@ const Income = () => {
       />
 
       <ExpensesOutput
+        mode='income'
         expenses={recentIncome}
         expensesPeriod={value}
         fallbackText={"No income registered for the " + value}
@@ -102,7 +103,7 @@ const Income = () => {
             size={24}
             color={GlobalStyles.colors.primary50}
             onPress={() => {
-              navigation.navigate("ManageExpense");
+              navigation.navigate("ManageIncome");
             }}
           />
         </View>
