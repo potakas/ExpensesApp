@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
 import ErrorOverlay from "../components/UI/ErrorOverlay";
@@ -9,11 +9,11 @@ import IconButton from "../components/UI/IconButton";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { GlobalStyles } from "../constants/styles";
 import { AuthContext } from "../store/auth-context";
-import { ExpensesContext } from "../store/expenses-context";
+import { IncomeContext } from "../store/income-context";
 import { getDateMinusDays } from "../util/date";
-import { fetchExpenses } from "../util/http";
+import { fetchIncome } from "../util/http";
 
-const RecentExpenses = ({ navigation }) => {
+const Income = () => {
   //useStates for dropdownpicker
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("Last 7 Days");
@@ -22,27 +22,27 @@ const RecentExpenses = ({ navigation }) => {
     { label: "Last Month", value: "Last Month" },
     { label: "Last Year", value: "Last Year" },
   ]);
-  // useStates for fetching Expense Data
+ // useStates for fetching Expense Data
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState();
 
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-  const expensesCtx = useContext(ExpensesContext);
+  const incomeCtx = useContext(IncomeContext);
 
   useEffect(() => {
-    const getExpenses = async () => {
+    const getIncome = async () => {
       setIsFetching(true);
       try {
-        const expenses = await fetchExpenses(token);
-        expensesCtx.setExpenses(expenses);
+        const income = await fetchIncome(token);
+        incomeCtx.setIncome(income);
       } catch (error) {
         setError("Could not fetch expenses");
       }
 
       setIsFetching(false);
     };
-    getExpenses();
+    getIncome();
   }, []);
 
   const errorHandler = () => {
@@ -57,7 +57,7 @@ const RecentExpenses = ({ navigation }) => {
     return <LoadingOverlay />;
   }
 
-  const recentExpenses = expensesCtx.expenses.filter((expense) => {
+  const recentIncome = incomeCtx.income.filter((income) => {
     let pastDays = 0;
     //changing the pastDays to dynamically calculate the expense period
     switch (value) {
@@ -75,7 +75,7 @@ const RecentExpenses = ({ navigation }) => {
     }
     const today = new Date();
     const dateDaysAgo = getDateMinusDays(today, pastDays);
-    return expense.date >= dateDaysAgo && expense.date <= today;
+    return income.date >= dateDaysAgo && income.date <= today;
   });
 
   return (
@@ -91,9 +91,9 @@ const RecentExpenses = ({ navigation }) => {
       />
 
       <ExpensesOutput
-        expenses={recentExpenses}
+        expenses={recentIncome}
         expensesPeriod={value}
-        fallbackText={"No expenses registered for the " + value}
+        fallbackText={"No income registered for the " + value}
       />
       <View style={styles.iconOuterContainer}>
         <View style={styles.iconInnerContainer}>
@@ -111,7 +111,7 @@ const RecentExpenses = ({ navigation }) => {
   );
 };
 
-export default RecentExpenses;
+export default Income;
 
 const styles = StyleSheet.create({
   container: {

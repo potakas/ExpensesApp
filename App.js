@@ -17,6 +17,8 @@ import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppState } from "react-native";
+import Income from "./screens/Income";
+import IncomeContextProvider from "./store/income-context";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -73,6 +75,17 @@ const ExpensesOverview = () => {
           ),
         }}
       />
+      <BottomTabs.Screen
+        name="Income"
+        component={Income}
+        options={{
+          title: "Income",
+          tabBarLabel: "Income",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cash" size={size} color={color} />
+          ),
+        }}
+      />
     </BottomTabs.Navigator>
   );
 };
@@ -98,6 +111,7 @@ function AuthenticatedStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleAlign: "center",
         headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: "white",
         contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
@@ -144,7 +158,7 @@ const Root = () => {
         setTimeout(() => {
           console.log("App has come to the background!");
           authCtx.logout();
-        }, 3000);
+        }, 1000);
       }
       appState.current = nextAppState;
     });
@@ -177,9 +191,11 @@ export default function App() {
     <>
       <StatusBar style="light" />
       <AuthContextProvider>
-        <ExpensesContextProvider>
-          <Root />
-        </ExpensesContextProvider>
+        <IncomeContextProvider>
+          <ExpensesContextProvider>
+            <Root />
+          </ExpensesContextProvider>
+        </IncomeContextProvider>
       </AuthContextProvider>
     </>
   );
