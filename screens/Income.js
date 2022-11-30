@@ -97,16 +97,16 @@ const Income = ({ navigation }) => {
         fallbackText={"No income registered for the " + value}
       />
       <View style={styles.iconOuterContainer}>
-        <View style={styles.iconInnerContainer}>
+        {/* <View style={styles.iconInnerContainer}> */}
           <IconButton
             icon="add"
-            size={24}
+            size={40}
             color={GlobalStyles.colors.primary50}
             onPress={() => {
               navigation.navigate("ManageIncome");
             }}
           />
-        </View>
+        {/* </View> */}
       </View>
     </View>
   );

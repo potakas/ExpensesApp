@@ -97,16 +97,16 @@ const RecentExpenses = ({ navigation }) => {
         fallbackText={"No expenses registered for the " + value}
       />
       <View style={styles.iconOuterContainer}>
-        <View style={styles.iconInnerContainer}>
+        {/* <View style={styles.iconInnerContainer}> */}
           <IconButton
             icon="add"
-            size={24}
+            size={40}
             color={GlobalStyles.colors.primary50}
             onPress={() => {
               navigation.navigate("ManageExpense");
             }}
           />
-        </View>
+        {/* </View> */}
       </View>
     </View>
   );
