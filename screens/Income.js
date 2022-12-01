@@ -99,7 +99,7 @@ const Income = ({ navigation }) => {
       <View style={styles.iconOuterContainer}>
         {/* <View style={styles.iconInnerContainer}> */}
           <IconButton
-            icon="add"
+            icon="add-circle-outline"
             size={40}
             color={GlobalStyles.colors.primary50}
             onPress={() => {
