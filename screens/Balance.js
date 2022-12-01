@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
 import BarChart from "react-native-bar-chart";
+import ExpensesSummary from "../components/ExpensesOutput/ExpensesSummary";
 import { GlobalStyles } from "../constants/styles";
 import { ExpensesContext } from "../store/expenses-context";
-
+import { getDateMinusDays } from "../util/date";
 
 const height = Dimensions.get("window").height;
 const width = Dimensions.get("window").width;
@@ -15,11 +16,10 @@ const Balance = () => {
   const horizontalData = expensesCtx.expenses.map((expense) =>
     expense.date.toISOString().slice(5, 10)
   );
-  //for better representation
-  const reverseData= data.reverse();
-  const reverseHorData= horizontalData.reverse();
+  const reverseData = data.reverse();
+  const reverseHorData = horizontalData.reverse();
   return (
-    <View style={styles.container}>
+    <View style={styles.outerContainer}>
       <BarChart
         data={reverseData}
         horizontalData={reverseHorData}
@@ -28,6 +28,12 @@ const Balance = () => {
         barLabelColor="white"
         labelColor="white"
       />
+      <View style={styles.innerContainer}>
+        <ExpensesSummary
+          expenses={expensesCtx.expenses}
+          periodName="Total Balance is "
+        />
+      </View>
     </View>
   );
 };
@@ -35,14 +41,20 @@ const Balance = () => {
 export default Balance;
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: GlobalStyles.colors.primary500,
   },
+  innerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 0,
+    backgroundColor: GlobalStyles.colors.primary500,
+  },
   chart: {
     width: width,
-    height: height ,
+    height: height,
   },
 });
