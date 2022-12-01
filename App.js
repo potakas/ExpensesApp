@@ -20,6 +20,7 @@ import { AppState } from "react-native";
 import Income from "./screens/Income";
 import IncomeContextProvider from "./store/income-context";
 import ManageIncome from "./screens/ManageIncome";
+import Balance from "./screens/Balance";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -84,6 +85,17 @@ const ExpensesOverview = () => {
           tabBarLabel: "Income",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="cash" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="Balance"
+        component={Balance}
+        options={{
+          title: "Balance",
+          tabBarLabel: "Balance",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart" size={size} color={color} />
           ),
         }}
       />
