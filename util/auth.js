@@ -14,7 +14,9 @@ const authenticate = async (mode, email, password) => {
 
   const token = response.data.idToken;
   // use UID to create separate tables for each user
-  AsyncStorage.setItem('UID', response.data.localId);
+  AsyncStorage.setItem("UID", response.data.localId);
+  AsyncStorage.setItem("@last_visited", new Date().toString());
+  console.log(new Date().toString());
   return token;
 };
 
