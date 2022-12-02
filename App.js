@@ -8,7 +8,6 @@ import AllExpenses from "./screens/AllExpenses";
 import { GlobalStyles } from "./constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "./components/UI/IconButton";
-import Settings from "./screens/Settings";
 import ExpensesContextProvider from "./store/expenses-context";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
@@ -16,11 +15,11 @@ import { useContext, useState, useEffect, useRef } from "react";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppState } from "react-native";
 import Income from "./screens/Income";
 import IncomeContextProvider from "./store/income-context";
 import ManageIncome from "./screens/ManageIncome";
 import Balance from "./screens/Balance";
+import { refreshToken } from "./util/auth";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -35,16 +34,6 @@ const ExpensesOverview = () => {
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
-        // headerRight: ({ tintColor }) => (
-        //   <IconButton
-        //     icon="add"
-        //     size={24}
-        //     color={tintColor}
-        //     onPress={() => {
-        //       navigation.navigate("ManageExpense");
-        //     }}
-        //   />
-        // ),
         headerRight: ({ tintColor }) => (
           <IconButton
             icon="exit"
@@ -162,28 +151,9 @@ function Navigation() {
 
 const Root = () => {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
+  const [time, setTime] = useState(0);
   const authCtx = useContext(AuthContext);
-
-  const appState = useRef(AppState.currentState);
-
-  useEffect(() => {
-    //for closing when on background
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/active/) &&
-        (nextAppState === "inactive" || nextAppState === "background")
-      ) {
-        setTimeout(() => {
-          console.log("App has come to the background!");
-          authCtx.logout();
-        }, 1000);
-      }
-      appState.current = nextAppState;
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  const timer = useRef(null);
 
   //code that runs at the start of the application
   useEffect(() => {
@@ -196,6 +166,42 @@ const Root = () => {
     };
     fetchToken();
   }, []);
+
+  //for refreshing the token each time we logging during the 1 hour period
+  useEffect(() => {
+    const refresh = async () => {
+      const refresh = await AsyncStorage.getItem("RT");
+      try {
+        const idToken = await refreshToken(refresh);
+        AsyncStorage.setItem("token", idToken);
+        AsyncStorage.setItem("@last_visited", new Date().toString());
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    refresh();
+  }, []);
+
+  //add useEffect with timer to logout after 1 hour from the last login
+  useEffect(() => {
+    const logOut = async () => {
+      const lastTime = await AsyncStorage.getItem("@last_visited");
+      if (
+        new Date() - new Date(lastTime) > 3599000 &&
+        authCtx.isAuthenticated
+      ) {
+        console.log("TIME TO LEAVE");
+        clearInterval(timer.current);
+        AsyncStorage.removeItem("@last_visited");
+        authCtx.isAuthenticated = false;
+        authCtx.logout();
+      }
+    };
+    timer.current = setInterval(() => {
+      setTime((time) => time + 10000);
+      logOut();
+    }, 10000);
+  }, [timer, authCtx.isAuthenticated]);
 
   if (isTryingLogin) {
     return <AppLoading />;
