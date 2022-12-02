@@ -187,12 +187,12 @@ const Root = () => {
     const logOut = async () => {
       const lastTime = await AsyncStorage.getItem("@last_visited");
       if (
-        new Date() - new Date(lastTime) > 3599000 &&
-        authCtx.isAuthenticated
+        new Date() - new Date(lastTime) > 3599000
       ) {
         console.log("TIME TO LEAVE");
         clearInterval(timer.current);
         AsyncStorage.removeItem("@last_visited");
+        AsyncStorage.removeItem("token"); // remove token for not going to the error page with false login
         authCtx.isAuthenticated = false;
         authCtx.logout();
       }
