@@ -158,50 +158,60 @@ const Root = () => {
   //code that runs at the start of the application
   useEffect(() => {
     const fetchToken = async () => {
-      const storedToken = await AsyncStorage.getItem("token");
+      let storedToken;
+      const lastTime = await AsyncStorage.getItem("@last_visited");
+      console.log("LT==>", new Date(lastTime))
+      if (new Date() - new Date(lastTime) > 3599000) {
+        storedToken = null;
+      } else {
+        storedToken = await AsyncStorage.getItem("token");
+      }
+      console.log("STORED TOKEN", storedToken);
       if (storedToken) {
         authCtx.authenticate(storedToken);
+      }else{
+        AsyncStorage.removeItem("@last_visited");
+        authCtx.logout();
+        authCtx.isAuthenticated= false
       }
       setIsTryingLogin(false);
     };
     fetchToken();
   }, []);
 
-  //for refreshing the token each time we logging during the 1 hour period
-  useEffect(() => {
-    const refresh = async () => {
-      const refresh = await AsyncStorage.getItem("RT");
-      try {
-        const idToken = await refreshToken(refresh);
-        AsyncStorage.setItem("token", idToken);
-        AsyncStorage.setItem("@last_visited", new Date().toString());
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    refresh();
-  }, []);
+  // //for refreshing the token each time we logging during the 1 hour period
+  // useEffect(() => {
+  //   const refresh = async () => {
+  //     const refresh = await AsyncStorage.getItem("RT");
+  //     try {
+  //       const idToken = await refreshToken(refresh);
+  //       AsyncStorage.setItem("token", idToken);
+  //       AsyncStorage.setItem("@last_visited", new Date().toString());
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   refresh();
+  // }, []);
 
-  //add useEffect with timer to logout after 1 hour from the last login
-  useEffect(() => {
-    const logOut = async () => {
-      const lastTime = await AsyncStorage.getItem("@last_visited");
-      if (
-        new Date() - new Date(lastTime) > 3599000
-      ) {
-        console.log("TIME TO LEAVE");
-        clearInterval(timer.current);
-        AsyncStorage.removeItem("@last_visited");
-        AsyncStorage.removeItem("token"); // remove token for not going to the error page with false login
-        authCtx.isAuthenticated = false;
-        authCtx.logout();
-      }
-    };
-    timer.current = setInterval(() => {
-      setTime((time) => time + 10000);
-      logOut();
-    }, 10000);
-  }, [timer, authCtx.isAuthenticated]);
+  // //add useEffect with timer to logout after 1 hour from the last login
+  // useEffect(() => {
+  //   const logOut = async () => {
+  //     const lastTime = await AsyncStorage.getItem("@last_visited");
+  //     if (new Date() - new Date(lastTime) > 3599000) {
+  //       console.log("TIME TO LEAVE");
+  //       clearInterval(timer.current);
+  //       AsyncStorage.removeItem("@last_visited");
+  //       AsyncStorage.removeItem("token"); // remove token for not going to the error page with false login
+  //       authCtx.isAuthenticated = false;
+  //       authCtx.logout();
+  //     }
+  //   };
+  //   timer.current = setInterval(() => {
+  //     setTime((time) => time + 10000);
+  //     logOut();
+  //   }, 10000);
+  // }, [timer, authCtx.isAuthenticated]);
 
   if (isTryingLogin) {
     return <AppLoading />;
