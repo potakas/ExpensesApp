@@ -36,7 +36,7 @@ const Balance = () => {
   //sum expenses by month
   const monthSumE = expensesCtx.expenses.reduce((acc, curr) => {
     const index = curr.date.getMonth();
-    acc[index] += curr.amount;
+    acc[index] += curr.amount*(-1);
     return acc;
   }, new Array(12).fill(0));
     //sum income by month
@@ -51,7 +51,7 @@ const Balance = () => {
 
   //map the difference and shop bar green or red according to sum
   const data2 = monthSumI.map((item, index) => {
-    let sum = item - monthSumE[index];
+    let sum = item + monthSumE[index];
     if (sum => 0) {
       barClr = "green";
     } else {
@@ -69,6 +69,12 @@ const Balance = () => {
   const horizontalData = expensesCtx.expenses.map((expense) =>
     expense.date.toISOString().slice(5, 10)
   );
+  // const totalBalance= expensesCtx.expenses.concat(incomeCtx.income)
+  // totalBalance.push(expensesCtx.expenses)
+  // totalBalance.push(incomeCtx.income)
+
+  // console.log(totalBalance)
+  // console.log(expensesCtx.expenses+incomeCtx.income)
   const reverseData = data.reverse();
   const reverseHorData = horizontalData.reverse();
   return (
@@ -84,7 +90,13 @@ const Balance = () => {
       <View style={styles.innerContainer}>
         <ExpensesSummary
           expenses={expensesCtx.expenses}
-          periodName="Total Balance is "
+          periodName="Total Expenses are "
+        />
+      </View>
+      <View style={styles.innerContainer}>
+        <ExpensesSummary
+          expenses={incomeCtx.income}
+          periodName="Total Income is "
         />
       </View>
     </View>
