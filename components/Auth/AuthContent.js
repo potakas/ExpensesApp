@@ -44,9 +44,11 @@ function AuthContent({ isLogin, onAuthenticate }) {
     }
   }
 
+  //for going to the forgot password screen
   const forgotPasswordHandler = () => {
     navigation.replace("Forgot");
   };
+
   function submitHandler(credentials) {
     let { email, confirmEmail, password, confirmPassword } = credentials;
 
