@@ -33,9 +33,7 @@ const GlobalStyles = {
 
 const useThemeColors = () => {
   const colorScheme = useColorScheme();
-  console.log(colorScheme);
   const colors = GlobalStyles[colorScheme];
-  console.log(colors);
 
   return colors;
 };
