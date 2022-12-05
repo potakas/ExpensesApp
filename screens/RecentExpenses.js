@@ -7,13 +7,33 @@ import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
 import ErrorOverlay from "../components/UI/ErrorOverlay";
 import IconButton from "../components/UI/IconButton";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
-import { GlobalStyles } from "../constants/styles";
+import useThemeColors from "../constants/styles";
 import { AuthContext } from "../store/auth-context";
 import { ExpensesContext } from "../store/expenses-context";
 import { getDateMinusDays } from "../util/date";
 import { fetchExpenses } from "../util/http";
 
 const RecentExpenses = ({ navigation }) => {
+  const colors = useThemeColors();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: "column",
+      backgroundColor: colors.primary700,
+    },
+    iconOuterContainer: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    iconInnerContainer: {
+      borderRadius: 30,
+      backgroundColor: colors.primary400,
+      margin: 8,
+      width: 50,
+      height: 50,
+    },
+  });
+  
   //useStates for dropdownpicker
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("Last 7 Days");
@@ -101,7 +121,7 @@ const RecentExpenses = ({ navigation }) => {
           <IconButton
             icon="add-circle-outline"
             size={40}
-            color={GlobalStyles.colors.primary50}
+            color={colors.primary50}
             onPress={() => {
               navigation.navigate("ManageExpense");
             }}
@@ -114,21 +134,3 @@ const RecentExpenses = ({ navigation }) => {
 
 export default RecentExpenses;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: GlobalStyles.colors.primary700,
-  },
-  iconOuterContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconInnerContainer: {
-    borderRadius: 30,
-    backgroundColor: GlobalStyles.colors.primary400,
-    margin: 8,
-    width: 50,
-    height: 50,
-  },
-});

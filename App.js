@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import ManageExpense from "./screens/ManageExpense";
 import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
-import { GlobalStyles } from "./constants/styles";
+import useThemeColors, { GlobalStyles } from "./constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "./components/UI/IconButton";
 import ExpensesContextProvider from "./store/expenses-context";
@@ -25,15 +25,17 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 const ExpensesOverview = () => {
+  const colors= useThemeColors();
   const authCtx = useContext(AuthContext);
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        tabBarStyle: { backgroundColor: colors.primary500 },
+        tabBarActiveTintColor: colors.accent500,
+        tabBarInactiveTintColor:'white',
         headerRight: ({ tintColor }) => (
           <IconButton
             icon="exit"
@@ -93,13 +95,15 @@ const ExpensesOverview = () => {
 };
 
 const AuthStack = () => {
+  const colors= useThemeColors();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+        contentStyle: { backgroundColor: colors.primary100 },
       }}
     >
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -109,14 +113,16 @@ const AuthStack = () => {
 };
 
 function AuthenticatedStack() {
+  const colors= useThemeColors();
+
   const authCtx = useContext(AuthContext);
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+        contentStyle: { backgroundColor: colors.primary100 },
       }}
     >
       <Stack.Screen

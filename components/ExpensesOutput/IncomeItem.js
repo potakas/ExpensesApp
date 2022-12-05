@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import { Pressable, Text, View, StyleSheet, Alert } from "react-native";
-import { GlobalStyles } from "../../constants/styles";
+import useThemeColors from "../../constants/styles";
 import { AuthContext } from "../../store/auth-context";
 import { IncomeContext } from "../../store/income-context";
 import { getFormattedDate } from "../../util/date";
@@ -15,7 +15,52 @@ const IncomeItem = ({ id, description, amount, date }) => {
   const token = authCtx.token;
   const [error, setError] = useState();
   const [longPressTriggered, setLongPressTriggered] = useState(false);
+  const colors = useThemeColors();
 
+  const styles = StyleSheet.create({
+    pressed: {
+      opacity: 0.75,
+    },
+    expenseItem: {
+      padding: 12,
+      marginVertical: 8,
+      backgroundColor: colors.primary500,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderRadius: 6,
+      elevation: 3,
+      shadowColor: colors.gray500,
+      shadowRadius: 4,
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.4,
+    },
+    textBase: {
+      color: colors.primary50,
+    },
+    description: {
+      fontSize: 16,
+      marginBottom: 4,
+      fontWeight: "bold",
+    },
+    amountContainer: {
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 4,
+      minWidth: 80,
+    },
+    amount: {
+      color: colors.primary500,
+      fontWeight: "bold",
+    },
+    optionsContainer: {
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center",
+    },
+  });
 
   const onLongPress = () => {
     setLongPressTriggered(true); //boolean for determining longPressed
@@ -64,7 +109,7 @@ const IncomeItem = ({ id, description, amount, date }) => {
           />
           <IconButton
             icon="trash"
-            color={GlobalStyles.colors.error500}
+            color={colors.error500}
             size={36}
             onPress={deleteIncomeHandler}
           />
@@ -76,47 +121,4 @@ const IncomeItem = ({ id, description, amount, date }) => {
 
 export default IncomeItem;
 
-const styles = StyleSheet.create({
-  pressed: {
-    opacity: 0.75,
-  },
-  expenseItem: {
-    padding: 12,
-    marginVertical: 8,
-    backgroundColor: GlobalStyles.colors.primary500,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderRadius: 6,
-    elevation: 3,
-    shadowColor: GlobalStyles.colors.gray500,
-    shadowRadius: 4,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.4,
-  },
-  textBase: {
-    color: GlobalStyles.colors.primary50,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 4,
-    fontWeight: "bold",
-  },
-  amountContainer: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    minWidth: 80,
-  },
-  amount: {
-    color: GlobalStyles.colors.primary500,
-    fontWeight: "bold",
-  },
-  optionsContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-});
+

@@ -2,10 +2,45 @@ import { useState } from "react";
 import { View, StyleSheet, Text, Alert } from "react-native";
 import Input from "./Input";
 import Button from "../UI/Button";
-import { GlobalStyles } from "../../constants/styles";
+import useThemeColors from "../../constants/styles";
 import DatePicker from "react-native-datepicker";
 
 const ExpenseForm = ({mode, onCancel, onSubmit, isEditing, defaultValues }) => {
+  const colors = useThemeColors();
+  const styles = StyleSheet.create({
+    form: { marginTop: 40 },
+    inputsRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    rowInput: {
+      flex: 1,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "white",
+      textAlign: "center",
+      marginVertical: 24,
+    },
+    buttons: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    button: {
+      minWidth: 120,
+      marginHorizontal: 8,
+    },
+    errorText: {
+      textAlign: "center",
+      color: colors.error500,
+      margin: 8,
+    },
+    datePicker: {
+      marginVertical: 24,
+    },
+  });
   //store a whole object in the state
   const [date, setDate] = useState(
     defaultValues ? defaultValues.date.toISOString().slice(0, 10) : ""
@@ -167,37 +202,4 @@ const ExpenseForm = ({mode, onCancel, onSubmit, isEditing, defaultValues }) => {
 
 export default ExpenseForm;
 
-const styles = StyleSheet.create({
-  form: { marginTop: 40 },
-  inputsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  rowInput: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    marginVertical: 24,
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    minWidth: 120,
-    marginHorizontal: 8,
-  },
-  errorText: {
-    textAlign: "center",
-    color: GlobalStyles.colors.error500,
-    margin: 8,
-  },
-  datePicker: {
-    marginVertical: 24,
-  },
-});
+

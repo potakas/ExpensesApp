@@ -1,6 +1,6 @@
 import { useContext, useLayoutEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { GlobalStyles } from "../constants/styles";
+import useThemeColors from "../constants/styles";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 import { storeIncome, updateIncome } from "../util/http";
 import { useState } from "react";
@@ -10,6 +10,21 @@ import { AuthContext } from "../store/auth-context";
 import { IncomeContext } from "../store/income-context";
 
 const ManageIncome = ({ route, navigation }) => {
+  const colors = useThemeColors();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 24,
+      backgroundColor: colors.primary800,
+    },
+    deleteContainer: {
+      marginTop: 16,
+      paddingTop: 8,
+      borderTopWidth: 2,
+      borderTopColor: colors.primary200,
+      alignItems: "center",
+    },
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState();
 
@@ -78,17 +93,4 @@ const ManageIncome = ({ route, navigation }) => {
 
 export default ManageIncome;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: GlobalStyles.colors.primary800,
-  },
-  deleteContainer: {
-    marginTop: 16,
-    paddingTop: 8,
-    borderTopWidth: 2,
-    borderTopColor: GlobalStyles.colors.primary200,
-    alignItems: "center",
-  },
-});
+
