@@ -52,7 +52,7 @@ const Balance = () => {
   //map the difference and shop bar green or red according to sum
   const data2 = monthSumI.map((item, index) => {
     let sum = item + monthSumE[index];
-    if (sum => 0) {
+    if (sum >= 0) {
       barClr = "green";
     } else {
       sum = sum * -1;
