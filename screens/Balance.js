@@ -4,6 +4,7 @@ import BarChart from "react-native-bar-chart";
 import ExpensesSummary from "../components/ExpensesOutput/ExpensesSummary";
 import useThemeColors from "../constants/styles";
 import { ExpensesContext } from "../store/expenses-context";
+import { IncomeContext } from "../store/income-context";
 import { getDateMinusDays } from "../util/date";
 
 const height = Dimensions.get("window").height;
@@ -30,8 +31,14 @@ const Balance = () => {
     },
   });
   const expensesCtx = useContext(ExpensesContext);
+  const incomeCtx = useContext(IncomeContext);
   // data can be one or two dimensional Array
-  const data = expensesCtx.expenses.map((expense) => expense.amount);
+  const dataExp = expensesCtx.expenses.map((expense) => expense.amount);
+  console.log("EXPENSES==>", dataExp);
+  const dataInc = incomeCtx.income.map((income) => income.amount);
+  console.log("INCOME==>", dataInc);
+
+  const data = dataExp;
   // labels
   const horizontalData = expensesCtx.expenses.map((expense) =>
     expense.date.toISOString().slice(5, 10)
@@ -59,5 +66,3 @@ const Balance = () => {
 };
 
 export default Balance;
-
-

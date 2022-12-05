@@ -92,7 +92,7 @@ export const fetchIncome = async (token) => {
       date: new Date(response.data[key].date),
       description: response.data[key].description,
     };
-    expenses.push(incomeObj);
+    income.push(incomeObj);
   }
 
   //TO DO
