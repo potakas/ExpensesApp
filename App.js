@@ -20,6 +20,7 @@ import IncomeContextProvider from "./store/income-context";
 import ManageIncome from "./screens/ManageIncome";
 import Balance from "./screens/Balance";
 import { refreshToken } from "./util/auth";
+import ForgotPassword from "./screens/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -108,6 +109,7 @@ const AuthStack = () => {
     >
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Forgot" component={ForgotPassword}/>
     </Stack.Navigator>
   );
 };

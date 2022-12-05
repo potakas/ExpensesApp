@@ -44,6 +44,9 @@ function AuthContent({ isLogin, onAuthenticate }) {
     }
   }
 
+  const forgotPasswordHandler = () => {
+    navigation.replace("Forgot");
+  };
   function submitHandler(credentials) {
     let { email, confirmEmail, password, confirmPassword } = credentials;
 
@@ -83,6 +86,11 @@ function AuthContent({ isLogin, onAuthenticate }) {
         <FlatButton onPress={switchAuthModeHandler}>
           {isLogin ? "Create a new user" : "Log in instead"}
         </FlatButton>
+        {isLogin && (
+          <FlatButton onPress={forgotPasswordHandler}>
+            Forgot Password?
+          </FlatButton>
+        )}
       </View>
     </View>
   );
