@@ -11,6 +11,7 @@ const height = Dimensions.get("window").height;
 const width = Dimensions.get("window").width;
 const Balance = () => {
   const colors = useThemeColors();
+  let barClr = "green";
 
   const styles = StyleSheet.create({
     outerContainer: {
@@ -32,14 +33,39 @@ const Balance = () => {
   });
   const expensesCtx = useContext(ExpensesContext);
   const incomeCtx = useContext(IncomeContext);
-  // data can be one or two dimensional Array
-  const dataExp = expensesCtx.expenses.map((expense) => expense.amount);
-  console.log("EXPENSES==>", dataExp);
-  const dataInc = incomeCtx.income.map((income) => income.amount);
-  console.log("INCOME==>", dataInc);
+  //sum expenses by month
+  const monthSumE = expensesCtx.expenses.reduce((acc, curr) => {
+    const index = curr.date.getMonth();
+    acc[index] += curr.amount;
+    return acc;
+  }, new Array(12).fill(0));
+    //sum income by month
+  const monthSumI = incomeCtx.income.reduce((acc, curr) => {
+    const index = curr.date.getMonth();
+    acc[index] += curr.amount;
+    return acc;
+  }, new Array(12).fill(0));
 
+  const dataExp = expensesCtx.expenses.map((expense) => expense.amount);
+  const dataInc = incomeCtx.income.map((income) => income.amount);
+
+  //map the difference and shop bar green or red according to sum
+  const data2 = monthSumI.map((item, index) => {
+    let sum = item - monthSumE[index];
+    if (sum => 0) {
+      barClr = "green";
+    } else {
+      sum = sum * -1;
+      barClr = "red";
+    }
+    return sum;
+  });
+  const totalAmount = data2.reduce((acc, curr) => acc + curr,[]);
+    // data can be one or two dimensional Array
   const data = dataExp;
+
   // labels
+  const horizontalData2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const horizontalData = expensesCtx.expenses.map((expense) =>
     expense.date.toISOString().slice(5, 10)
   );
@@ -48,9 +74,9 @@ const Balance = () => {
   return (
     <View style={styles.outerContainer}>
       <BarChart
-        data={reverseData}
-        horizontalData={reverseHorData}
-        barColor="red"
+        data={data2}
+        horizontalData={horizontalData2}
+        barColor={barClr}
         backgroundColor={colors.primary200}
         barLabelColor="white"
         labelColor="white"
