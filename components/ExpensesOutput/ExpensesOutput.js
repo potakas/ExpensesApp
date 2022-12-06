@@ -1,13 +1,28 @@
 import { View, StyleSheet, Text } from "react-native";
 import ExpensesList from "./ExpensesList";
 import ExpensesSummary from "./ExpensesSummary";
-import {GlobalStyles} from '../../constants/styles'
+import useThemeColors from "../../constants/styles";
 
-
-const ExpensesOutput = ({ expenses, expensesPeriod, fallbackText }) => {
-  let content= <Text style={styles.infoText}>{fallbackText}</Text>
-  if(expenses.length>0) {
-    content= <ExpensesList expenses={expenses}/>
+const ExpensesOutput = ({ mode, expenses, expensesPeriod, fallbackText }) => {
+  const colors = useThemeColors();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: 24,
+      paddingTop: 24,
+      paddingBottom: 0,
+      backgroundColor: colors.primary700,
+    },
+    infoText: {
+      color: "white",
+      fontSize: 16,
+      textAlign: "center",
+      marginTop: 32,
+    },
+  });
+  let content = <Text style={styles.infoText}>{fallbackText}</Text>;
+  if (expenses.length > 0) {
+    content = <ExpensesList mode={mode} expenses={expenses} />;
   }
   return (
     <View style={styles.container}>
@@ -18,19 +33,3 @@ const ExpensesOutput = ({ expenses, expensesPeriod, fallbackText }) => {
 };
 
 export default ExpensesOutput;
-
-const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    paddingHorizontal:24,
-    paddingTop:24,
-    paddingBottom:0,
-    backgroundColor:GlobalStyles.colors.primary700
-  },
-  infoText:{
-    color:'white',
-    fontSize:16,
-    textAlign:'center',
-    marginTop:32, 
-  }
-})

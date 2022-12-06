@@ -14,7 +14,10 @@ const authenticate = async (mode, email, password) => {
 
   const token = response.data.idToken;
   // use UID to create separate tables for each user
-  AsyncStorage.setItem('UID', response.data.localId);
+  AsyncStorage.setItem("UID", response.data.localId);
+  AsyncStorage.setItem("@last_visited", new Date().toString());
+  AsyncStorage.setItem("RT", response.data.refreshToken);
+  console.log(new Date().toString());
   return token;
 };
 
@@ -26,4 +29,16 @@ export const createUser = async (email, password) => {
 export const login = async (email, password) => {
   const token = await authenticate("signInWithPassword", email, password);
   return token;
+};
+
+//for refreshing the token each time we logging during the 1 hour period
+export const refreshToken = async (refresh_token) => {
+  url = "https://securetoken.googleapis.com/v1/token?key=" + API_KEY;
+  const response = await axios.post(url, {
+    grant_type: "refresh_token",
+    refresh_token: refresh_token,
+  });
+
+  const idToken = response.data.id_token;
+  return idToken;
 };

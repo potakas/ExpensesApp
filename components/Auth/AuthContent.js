@@ -4,10 +4,29 @@ import { Alert, StyleSheet, View } from "react-native";
 import FlatButton from "../UI/FlatButton";
 import AuthForm from "./AuthForm";
 import { useNavigation } from "@react-navigation/native";
-import { GlobalStyles } from "../../constants/styles";
+import useThemeColors from "../../constants/styles";
 
 function AuthContent({ isLogin, onAuthenticate }) {
   const navigation = useNavigation();
+  const colors = useThemeColors();
+
+  const styles = StyleSheet.create({
+    authContent: {
+      marginTop: 64,
+      marginHorizontal: 32,
+      padding: 16,
+      borderRadius: 8,
+      backgroundColor: colors.primary800,
+      elevation: 2,
+      shadowColor: "black",
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.35,
+      shadowRadius: 4,
+    },
+    buttons: {
+      marginTop: 8,
+    },
+  });
 
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
@@ -24,6 +43,11 @@ function AuthContent({ isLogin, onAuthenticate }) {
       navigation.replace("Login");
     }
   }
+
+  //for going to the forgot password screen
+  const forgotPasswordHandler = () => {
+    navigation.replace("Forgot");
+  };
 
   function submitHandler(credentials) {
     let { email, confirmEmail, password, confirmPassword } = credentials;
@@ -64,27 +88,14 @@ function AuthContent({ isLogin, onAuthenticate }) {
         <FlatButton onPress={switchAuthModeHandler}>
           {isLogin ? "Create a new user" : "Log in instead"}
         </FlatButton>
+        {isLogin && (
+          <FlatButton onPress={forgotPasswordHandler}>
+            Forgot Password?
+          </FlatButton>
+        )}
       </View>
     </View>
   );
 }
 
 export default AuthContent;
-
-const styles = StyleSheet.create({
-  authContent: {
-    marginTop: 64,
-    marginHorizontal: 32,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: GlobalStyles.colors.primary800,
-    elevation: 2,
-    shadowColor: "black",
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-  },
-  buttons: {
-    marginTop: 8,
-  },
-});

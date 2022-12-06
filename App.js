@@ -5,10 +5,9 @@ import { StatusBar } from "expo-status-bar";
 import ManageExpense from "./screens/ManageExpense";
 import RecentExpenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
-import { GlobalStyles } from "./constants/styles";
+import useThemeColors, { GlobalStyles } from "./constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "./components/UI/IconButton";
-import Settings from "./screens/Settings";
 import ExpensesContextProvider from "./store/expenses-context";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
@@ -16,32 +15,29 @@ import { useContext, useState, useEffect, useRef } from "react";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import AppLoading from "expo-app-loading";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppState } from "react-native";
+import Income from "./screens/Income";
+import IncomeContextProvider from "./store/income-context";
+import ManageIncome from "./screens/ManageIncome";
+import Balance from "./screens/Balance";
+import { refreshToken } from "./util/auth";
+import ForgotPassword from "./screens/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 const ExpensesOverview = () => {
+  const colors= useThemeColors();
   const authCtx = useContext(AuthContext);
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        tabBarStyle: { backgroundColor: colors.primary500 },
+        tabBarActiveTintColor: colors.accent500,
+        tabBarInactiveTintColor:'white',
         headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="add"
-            size={24}
-            color={tintColor}
-            onPress={() => {
-              navigation.navigate("ManageExpense");
-            }}
-          />
-        ),
-        headerLeft: ({ tintColor }) => (
           <IconButton
             icon="exit"
             size={24}
@@ -73,34 +69,62 @@ const ExpensesOverview = () => {
           ),
         }}
       />
+      <BottomTabs.Screen
+        name="Income"
+        component={Income}
+        options={{
+          title: "Income",
+          tabBarLabel: "Income",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cash" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="Balance"
+        component={Balance}
+        options={{
+          title: "Balance",
+          tabBarLabel: "Balance",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart" size={size} color={color} />
+          ),
+        }}
+      />
     </BottomTabs.Navigator>
   );
 };
 
 const AuthStack = () => {
+  const colors= useThemeColors();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+        contentStyle: { backgroundColor: colors.primary100 },
       }}
     >
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Forgot" component={ForgotPassword}/>
     </Stack.Navigator>
   );
 };
 
 function AuthenticatedStack() {
+  const colors= useThemeColors();
+
   const authCtx = useContext(AuthContext);
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerTitleAlign: "center",
+        headerStyle: { backgroundColor: colors.primary500 },
         headerTintColor: "white",
-        contentStyle: { backgroundColor: GlobalStyles.colors.primary100 },
+        contentStyle: { backgroundColor: colors.primary100 },
       }}
     >
       <Stack.Screen
@@ -111,6 +135,11 @@ function AuthenticatedStack() {
       <Stack.Screen
         name="ManageExpense"
         component={ManageExpense}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="ManageIncome"
+        component={ManageIncome}
         options={{ presentation: "modal" }}
       />
     </Stack.Navigator>
@@ -130,40 +159,67 @@ function Navigation() {
 
 const Root = () => {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
+  const [time, setTime] = useState(0);
   const authCtx = useContext(AuthContext);
-
-  const appState = useRef(AppState.currentState);
-
-  useEffect(() => {
-    //for closing when on background
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/active/) &&
-        (nextAppState === "inactive" || nextAppState === "background")
-      ) {
-        setTimeout(() => {
-          console.log("App has come to the background!");
-          authCtx.logout();
-        }, 3000);
-      }
-      appState.current = nextAppState;
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  const timer = useRef(null);
 
   //code that runs at the start of the application
   useEffect(() => {
     const fetchToken = async () => {
-      const storedToken = await AsyncStorage.getItem("token");
+      let storedToken;
+      const lastTime = await AsyncStorage.getItem("@last_visited");
+      console.log("LT==>", new Date(lastTime))
+      if (new Date() - new Date(lastTime) > 3599000) {
+        storedToken = null;
+      } else {
+        storedToken = await AsyncStorage.getItem("token");
+      }
+      console.log("STORED TOKEN", storedToken);
       if (storedToken) {
         authCtx.authenticate(storedToken);
+      }else{
+        AsyncStorage.removeItem("@last_visited");
+        authCtx.logout();
+        authCtx.isAuthenticated= false
       }
       setIsTryingLogin(false);
     };
     fetchToken();
   }, []);
+
+  // //for refreshing the token each time we logging during the 1 hour period
+  // useEffect(() => {
+  //   const refresh = async () => {
+  //     const refresh = await AsyncStorage.getItem("RT");
+  //     try {
+  //       const idToken = await refreshToken(refresh);
+  //       AsyncStorage.setItem("token", idToken);
+  //       AsyncStorage.setItem("@last_visited", new Date().toString());
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   refresh();
+  // }, []);
+
+  // //add useEffect with timer to logout after 1 hour from the last login
+  // useEffect(() => {
+  //   const logOut = async () => {
+  //     const lastTime = await AsyncStorage.getItem("@last_visited");
+  //     if (new Date() - new Date(lastTime) > 3599000) {
+  //       console.log("TIME TO LEAVE");
+  //       clearInterval(timer.current);
+  //       AsyncStorage.removeItem("@last_visited");
+  //       AsyncStorage.removeItem("token"); // remove token for not going to the error page with false login
+  //       authCtx.isAuthenticated = false;
+  //       authCtx.logout();
+  //     }
+  //   };
+  //   timer.current = setInterval(() => {
+  //     setTime((time) => time + 10000);
+  //     logOut();
+  //   }, 10000);
+  // }, [timer, authCtx.isAuthenticated]);
 
   if (isTryingLogin) {
     return <AppLoading />;
@@ -177,9 +233,11 @@ export default function App() {
     <>
       <StatusBar style="light" />
       <AuthContextProvider>
-        <ExpensesContextProvider>
-          <Root />
-        </ExpensesContextProvider>
+        <IncomeContextProvider>
+          <ExpensesContextProvider>
+            <Root />
+          </ExpensesContextProvider>
+        </IncomeContextProvider>
       </AuthContextProvider>
     </>
   );

@@ -1,8 +1,28 @@
 import { Text, View, StyleSheet } from "react-native";
-import { GlobalStyles } from "../../constants/styles";
+import useThemeColors from "../../constants/styles";
 import Button from "./Button";
 
 const ErrorOverlay = ({ message, onCorfirm }) => {
+  const colors = useThemeColors();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 24,
+      backgroundColor: colors.primary700,
+    },
+    text: {
+      color: "white",
+      textAlign: "center",
+      marginBottom: 8,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+  });
   return (
     <View style={styles.container}>
       <Text style={[styles.text, styles.title]}>An error occurred!</Text>
@@ -14,21 +34,4 @@ const ErrorOverlay = ({ message, onCorfirm }) => {
 
 export default ErrorOverlay;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: GlobalStyles.colors.primary700,
-  },
-  text: {
-    color: "white",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-});
+
