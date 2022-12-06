@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Alert } from "react-native";
 import Input from "../components/Auth/Input";
 import Button from "../components/UI/Button";
 import useThemeColors from "../constants/styles";
+import { resetPass } from "../util/auth";
 
 const ForgotPassword = ({ navigation }) => {
   const [enteredEmail, setEnteredEmail] = useState("");
@@ -20,11 +21,11 @@ const ForgotPassword = ({ navigation }) => {
 
   const styles = StyleSheet.create({
     text: {
-      color: 'white',
+      color: "white",
       textAlign: "center",
       fontWeight: "bold",
-      fontSize:16,
-      marginVertical: 8
+      fontSize: 16,
+      marginVertical: 8,
     },
     authContent: {
       marginTop: 64,
@@ -39,11 +40,25 @@ const ForgotPassword = ({ navigation }) => {
       shadowRadius: 4,
     },
     buttons: {
-      marginTop: 8,
+      margin: 8,
+    },
+    innerContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
     },
   });
 
   const sendEmailHandler = () => {
+    try {
+      resetPass(enteredEmail);
+      navigation.navigate("Login");
+      Alert.alert("Email sent successfully! Please check your spam.");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const cancelHandler = () => {
     navigation.navigate("Login");
   };
   return (
@@ -56,10 +71,14 @@ const ForgotPassword = ({ navigation }) => {
         keyboardType="email-address"
         isInvalid={false}
       />
-
-      <Button style={styles.buttons} onPress={sendEmailHandler}>
-        Send Email
-      </Button>
+      <View style={styles.innerContainer}>
+        <Button style={styles.buttons} onPress={cancelHandler}>
+          Cancel
+        </Button>
+        <Button style={styles.buttons} onPress={sendEmailHandler}>
+          Send Email
+        </Button>
+      </View>
     </View>
   );
 };

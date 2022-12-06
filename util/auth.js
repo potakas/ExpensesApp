@@ -42,3 +42,13 @@ export const refreshToken = async (refresh_token) => {
   const idToken = response.data.id_token;
   return idToken;
 };
+
+//for sending reset password email.
+export const resetPass= async(email)=>{
+  const url = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key="+API_KEY
+  const response = await axios.post(url,{
+    requestType:'PASSWORD_RESET',
+    email: email,
+  })
+  console.log("RESET RESPONSE==>", response)
+}
