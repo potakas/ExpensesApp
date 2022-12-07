@@ -14,9 +14,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic"
@@ -36,6 +34,10 @@
       "eas": {
         "projectId": "71ca7c8d-fcb3-43ad-9253-67b08b85c8da"
       }
+    },
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": ["js", "jsx", "svg", "ts", "tsx"]
     }
   }
 }

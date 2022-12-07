@@ -1,92 +1,75 @@
+import React from "react";
 import { useContext } from "react";
-import { View, StyleSheet, Text, Dimensions } from "react-native";
-import BarChart from "react-native-bar-chart";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { VictoryBar, VictoryChart, VictoryLabel, VictoryTheme } from "victory-native";
 import ExpensesSummary from "../components/ExpensesOutput/ExpensesSummary";
 import useThemeColors from "../constants/styles";
 import { ExpensesContext } from "../store/expenses-context";
 import { IncomeContext } from "../store/income-context";
-import { getDateMinusDays } from "../util/date";
 
-const height = Dimensions.get("window").height;
-const width = Dimensions.get("window").width;
+const width= Dimensions.get("window").width;
+const height= Dimensions.get("window").height;
+
+
 const Balance = () => {
+  const expensesCtx = useContext(ExpensesContext);
+  const incomeCtx = useContext(IncomeContext);
   const colors = useThemeColors();
-  let barClr = "green";
 
   const styles = StyleSheet.create({
     outerContainer: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colors.primary500,
+      backgroundColor: colors.primary400,
     },
     innerContainer: {
-      paddingHorizontal: 24,
-      paddingTop: 24,
-      paddingBottom: 0,
-      backgroundColor: colors.primary500,
-    },
-    chart: {
-      width: width,
-      height: height,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 8,
+      backgroundColor: colors.primary400,
     },
   });
-  const expensesCtx = useContext(ExpensesContext);
-  const incomeCtx = useContext(IncomeContext);
+
   //sum expenses by month
   const monthSumE = expensesCtx.expenses.reduce((acc, curr) => {
     const index = curr.date.getMonth();
-    acc[index] += curr.amount*(-1);
+    acc[index] += curr.amount;
     return acc;
   }, new Array(12).fill(0));
-    //sum income by month
+  //sum income by month
   const monthSumI = incomeCtx.income.reduce((acc, curr) => {
     const index = curr.date.getMonth();
     acc[index] += curr.amount;
     return acc;
   }, new Array(12).fill(0));
 
-  const dataExp = expensesCtx.expenses.map((expense) => expense.amount);
-  const dataInc = incomeCtx.income.map((income) => income.amount);
-
-  //map the difference and shop bar green or red according to sum
-  const data2 = monthSumI.map((item, index) => {
-    let sum = item + monthSumE[index];
-    if (sum >= 0) {
-      barClr = "green";
-    } else {
-      sum = sum * -1;
-      barClr = "red";
-    }
-    return sum;
+  const balance = monthSumI.map((item, index) => {
+    return item - monthSumE[index];
   });
-  const totalAmount = data2.reduce((acc, curr) => acc + curr,[]);
-    // data can be one or two dimensional Array
-  const data = dataExp;
-
-  // labels
+  console.log(balance);
   const horizontalData2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const horizontalData = expensesCtx.expenses.map((expense) =>
-    expense.date.toISOString().slice(5, 10)
-  );
-  // const totalBalance= expensesCtx.expenses.concat(incomeCtx.income)
-  // totalBalance.push(expensesCtx.expenses)
-  // totalBalance.push(incomeCtx.income)
 
-  // console.log(totalBalance)
-  // console.log(expensesCtx.expenses+incomeCtx.income)
-  const reverseData = data.reverse();
-  const reverseHorData = horizontalData.reverse();
+  //merge the 2 arrays into an array on objects {months:x, total:y}
+  const data2 = horizontalData2.map((item, index) => {
+    return { months: item, total: balance[index] };
+  });
+
   return (
     <View style={styles.outerContainer}>
-      <BarChart
-        data={data2}
-        horizontalData={horizontalData2}
-        barColor={barClr}
-        backgroundColor={colors.primary200}
-        barLabelColor="white"
-        labelColor="white"
-      />
+      <VictoryChart width={width} domainPadding={{ x: 16 }} theme={VictoryTheme.material}>
+        <VictoryBar
+          labels= {({datum})=> datum.total}
+          style={{
+            data: { fill: ({ datum }) => (datum.total <= 0 ? "red" : "green"), width:16 },
+            labels:{fill:'white'}
+          }}
+          data={data2}
+          labelComponent={<VictoryLabel dy={8}/>}
+          x="months"
+          y="total"
+        />
+      </VictoryChart>
       <View style={styles.innerContainer}>
         <ExpensesSummary
           expenses={expensesCtx.expenses}
