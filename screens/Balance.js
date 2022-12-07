@@ -21,13 +21,13 @@ const Balance = () => {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colors.primary400,
+      backgroundColor: colors.primary700,
     },
     innerContainer: {
       alignItems: "center",
       justifyContent: "center",
       padding: 8,
-      backgroundColor: colors.primary400,
+      backgroundColor: colors.primary700,
     },
   });
 
@@ -56,7 +56,7 @@ const Balance = () => {
 
   return (
     <View style={styles.outerContainer}>
-      <VictoryChart width={width} domainPadding={{ x: 16 }} theme={VictoryTheme.material}>
+      <VictoryChart width={width} height={height/2} domainPadding={{ x: 16 }} theme={VictoryTheme.material}>
         <VictoryBar
           labels= {({datum})=> datum.total}
           style={{
@@ -64,7 +64,7 @@ const Balance = () => {
             labels:{fill:'white'}
           }}
           data={data2}
-          labelComponent={<VictoryLabel dy={8}/>}
+          labelComponent={<VictoryLabel dy={16}/>}
           x="months"
           y="total"
         />
