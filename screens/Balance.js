@@ -47,7 +47,6 @@ const Balance = () => {
   const balance = monthSumI.map((item, index) => {
     return item - monthSumE[index];
   });
-  console.log(balance);
   const horizontalData2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   //merge the 2 arrays into an array on objects {months:x, total:y}
