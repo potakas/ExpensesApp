@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { VictoryBar, VictoryChart, VictoryLabel, VictoryTheme } from "victory-native";
 import ExpensesSummary from "../components/ExpensesOutput/ExpensesSummary";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
 import useThemeColors from "../constants/styles";
+import { AuthContext } from "../store/auth-context";
 import { ExpensesContext } from "../store/expenses-context";
 import { IncomeContext } from "../store/income-context";
+import { fetchIncome } from "../util/http";
 
 const width= Dimensions.get("window").width;
 const height= Dimensions.get("window").height;
 
 
 const Balance = () => {
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState();
+
+  //for getting income info without going to income screen
   const expensesCtx = useContext(ExpensesContext);
   const incomeCtx = useContext(IncomeContext);
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.token;
+
+
   const colors = useThemeColors();
 
   const styles = StyleSheet.create({
@@ -30,6 +41,22 @@ const Balance = () => {
       backgroundColor: colors.primary700,
     },
   });
+
+  //for fetching income info 
+  useEffect(() => {
+    const getIncome = async () => {
+      setIsFetching(true);
+      try {
+        const income = await fetchIncome(token);
+        incomeCtx.setIncome(income);
+      } catch (error) {
+        setError("Could not fetch income");
+      }
+
+      setIsFetching(false);
+    };
+    getIncome();
+  }, []);
 
   //sum expenses by month
   const monthSumE = expensesCtx.expenses.reduce((acc, curr) => {
@@ -53,6 +80,11 @@ const Balance = () => {
   const data2 = horizontalData2.map((item, index) => {
     return { months: item, total: balance[index] };
   });
+
+  //waiting for income information for the correct chart to appear
+  if (isFetching) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <View style={styles.outerContainer}>

@@ -36,13 +36,13 @@ const Income = ({ navigation }) => {
 
   //useStates for dropdownpicker
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("Last 7 Days");
+  const [value, setValue] = useState("Last Month");
   const [items, setItems] = useState([
     { label: "Last 7 Days", value: "Last 7 Days" },
     { label: "Last Month", value: "Last Month" },
     { label: "Last Year", value: "Last Year" },
   ]);
- // useStates for fetching Expense Data
+ // useStates for fetching Income Data
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState();
 
@@ -57,7 +57,7 @@ const Income = ({ navigation }) => {
         const income = await fetchIncome(token);
         incomeCtx.setIncome(income);
       } catch (error) {
-        setError("Could not fetch expenses");
+        setError("Could not fetch income");
       }
 
       setIsFetching(false);

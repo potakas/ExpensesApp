@@ -168,13 +168,11 @@ const Root = () => {
     const fetchToken = async () => {
       let storedToken;
       const lastTime = await AsyncStorage.getItem("@last_visited");
-      console.log("LT==>", new Date(lastTime))
       if (new Date() - new Date(lastTime) > 3599000) {
         storedToken = null;
       } else {
         storedToken = await AsyncStorage.getItem("token");
       }
-      console.log("STORED TOKEN", storedToken);
       if (storedToken) {
         authCtx.authenticate(storedToken);
       }else{

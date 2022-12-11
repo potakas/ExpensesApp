@@ -17,7 +17,6 @@ const authenticate = async (mode, email, password) => {
   AsyncStorage.setItem("UID", response.data.localId);
   AsyncStorage.setItem("@last_visited", new Date().toString());
   AsyncStorage.setItem("RT", response.data.refreshToken);
-  console.log(new Date().toString());
   return token;
 };
 
@@ -50,5 +49,4 @@ export const resetPass= async(email)=>{
     requestType:'PASSWORD_RESET',
     email: email,
   })
-  console.log("RESET RESPONSE==>", response)
 }
