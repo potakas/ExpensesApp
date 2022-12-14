@@ -72,7 +72,7 @@ const Balance = () => {
   }, new Array(12).fill(0));
 
   const balance = monthSumI.map((item, index) => {
-    return item - monthSumE[index];
+    return item.toFixed(2) - monthSumE[index].toFixed(2); //to show normal values in chart
   });
   const horizontalData2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
