@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { VictoryBar, VictoryChart, VictoryLabel, VictoryTheme } from "victory-native";
+import {
+  VictoryAxis,
+  VictoryBar,
+  VictoryChart,
+  VictoryLabel,
+  VictoryTheme,
+} from "victory-native";
 import ExpensesSummary from "../components/ExpensesOutput/ExpensesSummary";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import useThemeColors from "../constants/styles";
@@ -10,9 +16,8 @@ import { ExpensesContext } from "../store/expenses-context";
 import { IncomeContext } from "../store/income-context";
 import { fetchIncome } from "../util/http";
 
-const width= Dimensions.get("window").width;
-const height= Dimensions.get("window").height;
-
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 
 const Balance = () => {
   const [isFetching, setIsFetching] = useState(true);
@@ -23,7 +28,6 @@ const Balance = () => {
   const incomeCtx = useContext(IncomeContext);
   const authCtx = useContext(AuthContext);
   const token = authCtx.token;
-
 
   const colors = useThemeColors();
 
@@ -42,7 +46,7 @@ const Balance = () => {
     },
   });
 
-  //for fetching income info 
+  //for fetching income info
   useEffect(() => {
     const getIncome = async () => {
       setIsFetching(true);
@@ -88,17 +92,31 @@ const Balance = () => {
 
   return (
     <View style={styles.outerContainer}>
-      <VictoryChart width={width} height={height/2} domainPadding={{ x: 16 }} theme={VictoryTheme.material}>
+      <VictoryChart
+        width={width}
+        height={height / 2}
+        domainPadding={{ x: 16 }}
+        theme={VictoryTheme.material}
+      >
+        <VictoryAxis crossAxis style={{ tickLabels: { fill: "white" }, grid:{stroke:'none' } }} />
         <VictoryBar
-          labels= {({datum})=> datum.total}
+          labels={({ datum }) => datum.total}
           style={{
-            data: { fill: ({ datum }) => (datum.total <= 0 ? "red" : "green"), width:16 },
-            labels:{fill:'white'}
+            data: {
+              fill: ({ datum }) => (datum.total <= 0 ? "red" : "green"),
+              width: 16,
+            },
+            labels: { fill: "white" },
           }}
           data={data2}
-          labelComponent={<VictoryLabel dy={16}/>}
+          labelComponent={<VictoryLabel/>}
           x="months"
           y="total"
+        />
+        <VictoryAxis
+          dependentAxis
+          crossAxis
+          style={{ tickLabels: { fill: "white" }}}
         />
       </VictoryChart>
       <View style={styles.innerContainer}>
