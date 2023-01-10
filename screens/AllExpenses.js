@@ -2,12 +2,13 @@ import { useContext, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import DatePicker from "react-native-datepicker";
 import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
+import IconButton from "../components/UI/IconButton";
 import useThemeColors from "../constants/styles";
 import { ExpensesContext } from "../store/expenses-context";
 
 const AllExpenses = () => {
   const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateTo, setDateTo] = useState(new Date());
 
   const colors = useThemeColors();
   const styles = StyleSheet.create({
@@ -34,8 +35,6 @@ const AllExpenses = () => {
   });
   const expensesCtx = useContext(ExpensesContext);
   const shownExpenses = expensesCtx.expenses.filter((expense) => {
-    console.log(new Date(dateFrom));
-    console.log(new Date(dateTo));
     if (dateFrom !== "" && dateTo !== "") {
       return (
         expense.date >= new Date(dateFrom) && expense.date <= new Date(dateTo)
@@ -47,6 +46,15 @@ const AllExpenses = () => {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
+        <IconButton
+          icon="refresh-circle"
+          size={32}
+          color={colors.primary50}
+          onPress={() => {
+            setDateFrom("");
+            setDateTo(new Date());
+          }}
+        />
         <Text style={styles.text}>From:</Text>
         <DatePicker
           style={[styles.rowInput, styles.datePicker]}
@@ -57,6 +65,7 @@ const AllExpenses = () => {
           // format='DD-MM-YYYY'
           format="YYYY-MM-DD"
           minDate="01-01-1900"
+          maxDate={dateTo}
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           customStyles={{
