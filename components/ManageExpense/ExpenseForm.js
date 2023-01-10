@@ -157,18 +157,6 @@ const ExpenseForm = ({mode, onCancel, onSubmit, isEditing, defaultValues }) => {
           onConfirm={()=>{console.log("Date", date)}}
           onCancel={()=>{console.log("Canceled")}}
         />
-        {/* change the date input with datepicker and fix date format to work the same */}
-        {/* <Input
-          label="Date"
-          invalid={!input.date.isValid}
-          style={styles.rowInput}
-          textInputConfig={{
-            placeholder: "YYYY-MM-DD",
-            maxLength: 10,
-            onChangeText: inputChangedHandler.bind(this, "date"),
-            value: input.date.value,
-          }}
-        /> */}
       </View>
       <Input
         label="Description"
