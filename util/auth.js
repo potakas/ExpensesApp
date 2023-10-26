@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const API_KEY = "AIzaSyBfdVk4mmcmG5mQzINRAIzQo0oqekNkUlM";
+const API_KEY = "YOUR_API_KEY";
 
 const authenticate = async (mode, email, password) => {
   const url =
